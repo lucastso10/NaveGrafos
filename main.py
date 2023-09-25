@@ -187,7 +187,7 @@ def main():
         if g:
           print("\nDe qual vértice começa a aresta? (digite o número dele)\n")
           i = input()
-          print("\nDe qual vértice começa a aresta? (digite o número dele)\n")
+          print("\nEm qual vértice a aresta termina? (digite o número dele)\n")
           j = input()
           g.removeA(int(i), int(j))
           g.removeA(int(j), int(i))
