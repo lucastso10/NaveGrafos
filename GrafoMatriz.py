@@ -1,5 +1,9 @@
 from tabulate import tabulate
 
+# Ana Luisa Tsunematsu Ferreira	TIA: 32158521
+# Gabriel Ramires	TIA: 42080681
+# Lucas Teixeira Soares	TIA: 32124831
+
 class GrafoMatriz:
   TAM_MAX_DEFAULT = 100 # qtde de vértices máxima default
   # construtor da classe grafo
