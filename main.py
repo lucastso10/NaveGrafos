@@ -2,6 +2,10 @@ import pandas as pd
 import openpyxl
 from GrafoMatriz import GrafoMatriz
 
+# Ana Luisa Tsunematsu Ferreira	TIA: 32158521
+# Gabriel Ramires	TIA: 42080681
+# Lucas Teixeira Soares	TIA: 32124831
+
 def print_menu():
   print("╔═══════════════════════════════════════════╗")
   print("║                 NaveGrafos                ║")
