@@ -129,6 +129,8 @@ def main():
 
   rodar = True
 
+  g = None
+
   while rodar:
     print_menu()
     x = escolherOpcao()
