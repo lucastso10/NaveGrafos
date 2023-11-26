@@ -12,12 +12,12 @@ class GrafoMatriz:
     self.m = 0 # número de arestas
     # matriz de adjacência
     self.nomes = []
-    self.adj = [[0 for i in range(n)] for j in range(n)]
+    self.adj = [[float('inf') for i in range(n)] for j in range(n)]
   
   # Insere uma aresta no Grafo tal que
   # v é adjacente a w
   def insereA(self, v, w, val):
-    if self.adj[v][w] == 0:
+    if self.adj[v][w] == float('inf'):
       self.adj[v][w] = val
       self.m+=1 # atualiza qtd arestas
   
@@ -25,21 +25,21 @@ class GrafoMatriz:
   def removeA(self, v, w):
     # testa se temos a aresta
     if self.adj[v][w] >= 1:
-      self.adj[v][w] = 0
+      self.adj[v][w] = float('inf')
       self.m-=1; # atualiza qtd arestas
 
   def insereV(self, val):
     self.n += 1
-    novoV = [0 for i in range(self.n)]
+    novoV = [float('inf') for i in range(self.n)]
     self.adj.append(novoV)
     for i in range(self.n-1):
-      self.adj[i].append(0)
+      self.adj[i].append(float('inf'))
 
     self.nomes.append(val)
     
   
   def removeV(self, v):
-    adjNovo = [[0 for i in range(self.n - 1)] for j in range(self.n - 1)]
+    adjNovo = [[float('inf') for i in range(self.n - 1)] for j in range(self.n - 1)]
 
     for i in range(self.n):
       self.removeA(i, v)
@@ -88,7 +88,7 @@ class GrafoMatriz:
 
       temp_adj = []
 
-    if self.n % 4 != 0:
+    if self.n % 4 != float('inf'):
       for j in range(self.n):
         line = self.adj[j][self.n - (self.n % 4):self.n]
         line.insert(0, self.nomes[j] + f"({j})")
@@ -101,7 +101,7 @@ class GrafoMatriz:
   # Apresenta o Grafo contendo
   # número de vértices, arestas
   # e a matriz de adjacência obtida 
-  # Apresentando apenas os valores 0 ou 1	
+  # Apresentando apenas os valores float('inf') ou 1	
   def showMin(self):
     print(f"\n n: {self.n:2d} ", end="")
     print(f"m: {self.m:2d}\n")
@@ -110,13 +110,13 @@ class GrafoMatriz:
         if self.adj[i][w] >= 1:
           print(f" {self.adj[i][w]} ", end="") 
         else:
-          print(" 0 ", end="")
+          print(" inf ", end="")
       print("\n")
     print("\nfim da impressao do grafo." )
 
   
   def inDegree(self, v):
-    degree = 0
+    degree = float('inf')
     for i in range(self.n):
       if self.adj[i][v] == 1:
         degree += 1
@@ -124,41 +124,12 @@ class GrafoMatriz:
     return degree
   
   def outDegree(self, v):
-    degree = 0
+    degree = float('inf')
     for i in range(self.n):
       if self.adj[v][i] == 1:
         degree += 1
   
-    return degree  
-  
-  def ehFonte(self, v):
-    if self.inDegree(v) == 0 and self.outDegree(v) > 0:
-      return 1
-    return 0
-  
-  def ehSorvedouro(self, v):
-    if self.inDegree(v) > 0 and self.outDegree(v) == 0:
-      return 1
-    return 0
-  
-  def ehSimetrico(self):
-    if self.m % 2  != 0:
-      return 0
-  
-    for i in range(self.n):
-      for j in range(i, self.n):
-        if self.adj[i][j] == 1 and self.adj[j][i] == 0:
-          return 0
-      
-    return 1
-
-  def ehCompleto(self):
-    for i in range(self.n):
-      for j in range(self.n):
-        if self.adj[i][j] == 0 and i != j:
-          return 0
-    return 1
-
+    return degree 
 
   def caminhoPossivelIntern(self, x, y, rota):
     if x == y:
@@ -167,7 +138,7 @@ class GrafoMatriz:
     rota.add(x)
 
     for i in range(self.n):
-      if self.adj[x][i] == 1 and i not in rota and self.caminhoPossivelIntern(i, y, rota):
+      if self.adj[x][i] < float('inf')  and i not in rota and self.caminhoPossivelIntern(i, y, rota):
         return True
 
     return False
@@ -184,81 +155,69 @@ class GrafoMatriz:
     antigo = 0
     
     while antigo < len(conectados):
-      antigo = len(conectados)
-
+      
       for x in conectados:
         for i in range(self.n):
-          if self.adj[x][i] == 1 or self.adj[i][x] == 1:
+          if self.caminhoPossivel(x,i):
             novos_conectados.add(i)
 
       conectados = conectados.union(novos_conectados)
       novos_conectados.clear()
-
-    if self.n != len(conectados):
+      antigo = len(conectados)
+      
+    if self.n == len(conectados):
       return 0
+    else:
+      return 1
 
+  def dijkstra(self, inicial):
+    caminho_minimo = []
+  
     for i in range(self.n):
-      for j in range(i, self.n):
-        if not self.caminhoPossivel(i, j) and not self.caminhoPossivel(j, i):
-          return 1
-
-    for i in range(self.n):
-      for j in range(self.n):
-        if not (self.caminhoPossivel(i, j) and self.caminhoPossivel(i,j)):
-          return 2
-
-    return 3
-
-
-  def grafoReduzido(self):
-    RMais = {0}
-    RMenos = {0}
-    Total = {0}
-    S = []
-    verticeAtual = 0
-
-    while len(Total) != self.n:
-
-      RMais.add(verticeAtual)
-      RMenos.add(verticeAtual)
-
-      # calcula o RMais desse vertice
+      caminho_minimo.append(self.adj[inicial][i])
+  
+    caminho_minimo[inicial] = float('inf')
+  
+    A = [inicial]
+  
+    atual = inicial
+  
+    while len(A) < self.n:
+      min = float('inf')
+      for j in range(len(caminho_minimo)):
+        if min > caminho_minimo[j]:
+          if j in A:
+            continue
+          atual = j
+          min = caminho_minimo[j]
+  
+      A.append(atual)
+  
       for i in range(self.n):
-        if i in Total:
-          continue
-        if self.caminhoPossivel(verticeAtual, i):
-          RMais.add(i)
+        if self.adj[atual][i] + min < caminho_minimo[i]:
+          caminho_minimo[i] = self.adj[atual][i] + min
+          
+    return caminho_minimo
 
-      # calcula o RMenos desse vertice
-      for i in range(self.n):
-        if i in Total:
-          continue
+  def grau_vertice(self, vertice):
+    grau = 0
+    for i in range(len(self.adj[vertice])):
+      if self.adj[vertice][i] < float('inf'):
+        grau += 1
         
-        if self.caminhoPossivel(i, verticeAtual):
-          RMenos.add(i)
+    return grau
 
-      # pega a intersecção e coloca na lista
-      S.append(list(RMais.intersection(RMenos)))
-      Total = Total.union(RMais.intersection(RMenos))
+  def euleriano(self):
+    # Verifica se o grafo é conexo
+    if self.categoriaConexidade() == 1:
+        return False
 
-      RMais.clear()
-      RMenos.clear()
+    # Verifica se todos os vértices têm grau par
+    for i in range(len(self.adj)):
+        grau = self.grau_vertice(i)
+        if grau % 2 != 0:
+            return False
 
-      # pega o maior vertice de todas as intersecções e soma um para
-      # decidir o proximo vertice que vai calcular o RMais e RMenos
-      verticeAtual = max(Total) + 1
+    return True
 
-    # cria um grafo com a quantidade de secções do outro
-    Gr = GrafoMatriz(len(S))
-
-    # for bem feio para calcular todas as arestas do grafo reduzido
-    # ela compara cada vertice de cada secção com cada vertice das outras
-    # secções pra determinar se tem uma aresta entre os vertices do novo grafo
-    for i in range(len(S)):
-      for j in range(len(S[i])):
-        for k in range(len(S)):
-          for l in range(len(S[k])):
-            if i != k and self.caminhoPossivel(S[i][j], S[k][l]):
-              Gr.insereA(i,k)
-
-    return Gr
+      

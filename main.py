@@ -29,12 +29,19 @@ def print_menu():
   print("║                                           ║")
   print("║ 9.Conexidade                              ║")
   print("║                                           ║")
+  print("║ 10.Caminho minimo                         ║")
+  print("║                                           ║")
+  print("║ 11.Grau                                   ║")
+  print("║                                           ║")
+  print("║ 12.caminho euleriano                      ║")
+  print("║                                           ║")
   print("║ 0.Sair                                    ║")
   print("╚═══════════════════════════════════════════╝")
 
 def escolherOpcao():
   valido = False
 
+  x = 0
   while not valido:
     x = input()
     try:
@@ -42,7 +49,7 @@ def escolherOpcao():
     except ValueError:
       print("Porfavor digite o número de uma das opções!")
       continue
-    if x > 9 or x < 0:
+    if x > 12 or x < 0:
       print("Porfavor digite o número de uma das opções!")
       continue
     valido = True
@@ -79,7 +86,7 @@ def salvarDados(g):
     f.write(f"{g.m}\n")
     for i in range(g.n):
       for j in range(g.n):
-        if g.adj[i][j] >= 1:
+        if g.adj[i][j] >= 1 and g.adj[i][j] != float('inf'):
           f.write(f"{i} {j} {g.adj[i][j]}\n")
 
 def printArquivo():
@@ -166,11 +173,11 @@ def main():
       case 4:
         # inserir aresta
         if g:
-          print("\nQual vértice gostaria de conectar? (digite o número dele)\n")
+          print("\nQual porto gostaria de conectar? (digite o número dele)\n")
           i = input()
-          print(f"\nCom qual vértice gostaria de conectar o vértice {i}? (digite o número dele)\n")
+          print(f"\nCom porto gostaria de conectar o vértice {i}? (digite o número dele)\n")
           j = input()
-          print("\nQual seria o valor desse vértice?")
+          print("\nQual seria a distancia desses portos?")
           val = input()
           g.insereA(int(i), int(j), int(val))
           g.insereA(int(j), int(i), int(val))
@@ -222,13 +229,39 @@ def main():
         else:
           print("\nNão existe nenhum grafo!\n")
 
+      case 10:
+        if g:
+          print("Qual seria o porto inicial? (digite seu número conrespondente)")
+          inpu = input()
+          caminhos_minimos = g.dijkstra(int(inpu))
+          print(f"\nCaminhos minimos do porto {g.nomes[int(inpu)]} até outros portos:")
+          for i in range(len(caminhos_minimos)):
+            if i == int(inpu):
+              continue
+            print(f"\n{g.nomes[i]} - {caminhos_minimos[i]}")
+        else:
+          print("\nNão existe nenhum grafo!\n")
+          
+      case 11:
+        if g:
+          print("Qual o porto você quer calcular o grau? (digite seu número conrespondente)")
+          i = input()
+          print(f"\nO grau desse porto é: {g.grau_vertice(int(i))}")
+        else:
+          print("\nNão existe nenhum grafo!\n")
+
+      case 12:
+        if g:
+          if g.euleriano():
+            print("\nEsse grafo é euleriano!")
+          else:
+            print("\nEsse grafo não é euleriano!")
+        else:
+          print("\nNão existe nenhum grafo!\n")
+          
       case 0:
         #sair
         rodar = False
-
-    
-
-
 
 
 if __name__ == "__main__":
